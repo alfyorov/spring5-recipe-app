@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import guru.springframework.converters.RecipeCommandToRecipe;
+import guru.springframework.converters.RecipeToRecipeCommand;
 import guru.springframework.domain.Recipe;
 import guru.springframework.repositories.RecipeRepository;
 import org.junit.Before;
@@ -26,10 +28,17 @@ public class RecipeServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    @Mock
+    RecipeCommandToRecipe recipeCommandToRecipe;
+
+    @Mock
+    RecipeToRecipeCommand recipeToRecipeCommand;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        classUnderTest = new RecipeServiceImpl(recipeRepository);
+
+        classUnderTest = new RecipeServiceImpl(recipeRepository, recipeCommandToRecipe, recipeToRecipeCommand);
     }
 
     @Test

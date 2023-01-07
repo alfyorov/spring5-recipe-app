@@ -1,5 +1,6 @@
 package guru.springframework.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -30,6 +31,6 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories")
     @ToString.Exclude
-    private Set<Recipe> recipes;
+    private Set<Recipe> recipes = new HashSet<>();
 
 }
