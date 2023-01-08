@@ -1,7 +1,6 @@
 package guru.springframework.controllers;
 
 import guru.springframework.commands.RecipeCommand;
-import guru.springframework.domain.Recipe;
 import guru.springframework.services.RecipeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,8 +20,7 @@ public class RecipeController {
 
     @RequestMapping("/recipe/{id}/show")
     public String showById(@PathVariable Long id, Model model) {
-        Recipe recipe = recipeService.findById(id);
-        model.addAttribute("recipe", recipe);
+        model.addAttribute("recipe", recipeService.findById(id));
 
         return "recipe/show";
     }
@@ -34,11 +32,18 @@ public class RecipeController {
         return "recipe/form";
     }
 
+    @RequestMapping("/recipe/{id}/update")
+    public String updateRecipe(@PathVariable Long id, Model model) {
+        model.addAttribute("recipe", recipeService.findCommandById(id));
+
+        return "recipe/form";
+    }
+
     @PostMapping
     @RequestMapping("/recipe")
     public String saveOrUpdate(@ModelAttribute RecipeCommand recipeCommand) {
         RecipeCommand savedCommand = recipeService.saveRecipeCommand(recipeCommand);
 
-        return "redirect:/recipe/show/" + savedCommand.getId();
+        return "redirect:/recipe/" + savedCommand.getId() + "/show";
     }
 }
