@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
   <title>Show Recipe</title>
@@ -23,7 +23,7 @@
           <div class="card-body">
             <div class="row justify-content-center">
               <div class="col-md-3">
-                <h7>Categories:</h7>
+                <h6>Categories:</h6>
               </div>
               <div class="col-md-9">
                 <ul>
@@ -36,13 +36,13 @@
             </div>
             <div class="row justify-content-center">
               <div class="col-md-3">
-                <h7>Prep Time:</h7>
+                <h6>Prep Time:</h6>
               </div>
               <div class="col-md-3">
                 <p th:text="${recipe.prepTime + ' min'}">30 min</p>
               </div>
               <div class="col-md-3">
-                <h7>Difficulty:</h7>
+                <h6>Difficulty:</h6>
               </div>
               <div class="col-md-3">
                 <p th:text="${recipe.difficulty}">Easy</p>
@@ -50,13 +50,13 @@
             </div>
             <div class="row justify-content-center">
               <div class="col-md-3">
-                <h7>Cooktime:</h7>
+                <h6>Cooktime:</h6>
               </div>
               <div class="col-md-3">
                 <p th:text="${recipe.cookTime + ' min'}">30 min</p>
               </div>
               <div class="col-md-3">
-                <h7>Servings:</h7>
+                <h6>Servings:</h6>
               </div>
               <div class="col-md-3">
                 <p th:text="${recipe.serving}">4</p>
@@ -64,16 +64,16 @@
             </div>
             <div class="row justify-content-center">
               <div class="col-md-3">
-                <h7>Source:</h7>
+                <h6>Source:</h6>
               </div>
               <div class="col-md-3">
                 <p th:text="${recipe.source}">30 min</p>
               </div>
               <div class="col-md-3">
-                <h7>URL:</h7>
+                <h6>URL:</h6>
               </div>
               <div class="col-md-3">
-                <p th:text="${recipe.url}">http://www.example.com</p>
+                <p th:text="${recipe.url}">https://www.example.com</p>
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@
 </body>
 </html>
 <style>
-  h7{
+  h6{
     font-weight: bold;
   }
 </style>
