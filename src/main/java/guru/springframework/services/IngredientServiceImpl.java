@@ -1,6 +1,5 @@
 package guru.springframework.services;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -98,5 +97,26 @@ public class IngredientServiceImpl implements IngredientService {
         }
 
         return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
+    }
+
+    @Override
+    public void deleteByRecipeIdAndIngredientId(Long recipeId, Long id) {
+        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+
+        if (!optionalRecipe.isPresent()) {
+            System.out.println("Recipe not found"); //TODO
+            return;
+        }
+
+        Recipe recipe = optionalRecipe.get();
+
+        Optional<Ingredient> ingredientOptional = recipe.getIngredients().stream().filter(ingredient -> id.equals(ingredient.getId())).findFirst();
+
+        if (ingredientOptional.isPresent()) {
+            Ingredient ingredientToDelete = ingredientOptional.get();
+            ingredientToDelete.setRecipe(null);
+            recipe.getIngredients().remove(ingredientToDelete);
+            recipeRepository.save(recipe);
+        }
     }
 }
