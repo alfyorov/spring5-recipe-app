@@ -14,7 +14,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity
 public class Notes {

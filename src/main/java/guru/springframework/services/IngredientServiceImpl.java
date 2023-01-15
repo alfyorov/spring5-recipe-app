@@ -9,6 +9,7 @@ import guru.springframework.converters.IngredientCommandToIngredient;
 import guru.springframework.converters.IngredientToIngredientCommand;
 import guru.springframework.domain.Ingredient;
 import guru.springframework.domain.Recipe;
+import guru.springframework.repositories.IngredientRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
 import org.springframework.stereotype.Service;
@@ -17,14 +18,16 @@ import org.springframework.stereotype.Service;
 public class IngredientServiceImpl implements IngredientService {
 
     private final RecipeRepository recipeRepository;
+    private final IngredientRepository ingredientRepository;
     private final IngredientToIngredientCommand ingredientToIngredientCommand;
     private final IngredientCommandToIngredient ingredientCommandToIngredient;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
 
-    public IngredientServiceImpl(RecipeRepository recipeRepository, IngredientToIngredientCommand ingredientToIngredientCommand,
+    public IngredientServiceImpl(RecipeRepository recipeRepository, IngredientRepository ingredientRepository, IngredientToIngredientCommand ingredientToIngredientCommand,
             IngredientCommandToIngredient ingredientCommandToIngredient,
             UnitOfMeasureRepository unitOfMeasureRepository) {
         this.recipeRepository = recipeRepository;
+        this.ingredientRepository = ingredientRepository;
         this.ingredientToIngredientCommand = ingredientToIngredientCommand;
         this.ingredientCommandToIngredient = ingredientCommandToIngredient;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
@@ -100,6 +103,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
+    @Transactional
     public void deleteByRecipeIdAndIngredientId(Long recipeId, Long id) {
         Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
 
@@ -112,11 +116,16 @@ public class IngredientServiceImpl implements IngredientService {
 
         Optional<Ingredient> ingredientOptional = recipe.getIngredients().stream().filter(ingredient -> id.equals(ingredient.getId())).findFirst();
 
-        if (ingredientOptional.isPresent()) {
-            Ingredient ingredientToDelete = ingredientOptional.get();
-            ingredientToDelete.setRecipe(null);
+        if (!ingredientOptional.isPresent()) {
+            throw new RuntimeException("Could not find ingredient " + id + " on recipe " + recipeId + " to delete");
+        }
+
+        Ingredient ingredientToDelete = ingredientOptional.get();
+        if (recipeId.equals(ingredientToDelete.getRecipe().getId())) {
             recipe.getIngredients().remove(ingredientToDelete);
-            recipeRepository.save(recipe);
+            ingredientToDelete.setRecipe(null);
+            ingredientRepository.deleteById(id);
+//            recipeRepository.save(recipe);
         }
     }
 }

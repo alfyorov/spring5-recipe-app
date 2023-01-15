@@ -1,5 +1,6 @@
 package guru.springframework.controllers;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -13,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -48,7 +50,7 @@ public class ImageControllerTest {
         when(recipeService.findCommandById(anyLong())).thenReturn(recipeCommand);
 
         //Act
-        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/1/image"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/1/image/upload"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.model().attributeExists("recipe"))
                 .andExpect(MockMvcResultMatchers.view().name("recipe/uploadImage"));;
@@ -59,12 +61,34 @@ public class ImageControllerTest {
 
     @Test
     public void handleImagePost() throws Exception {
-        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.txt", "text/plain", "Spring Framework Guru".getBytes());
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("imagefile", "test.txt", "text/plain", "Spring Framework Guru".getBytes());
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/recipe/1/image").file(mockMultipartFile))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.header().string("Location", "/recipe/1/show"));
 
         verify(imageService, times(1)).saveImageFile(anyLong(), any());
+    }
+
+    @Test
+    public void renderImageFromDB() throws Exception {
+        //Arrange
+        RecipeCommand recipeCommand = new RecipeCommand();
+        recipeCommand.setId(2L);
+
+        String s = "some image content";
+        byte[] bytes = s.getBytes();
+        recipeCommand.setImage(bytes);
+
+        when(recipeService.findCommandById(anyLong())).thenReturn(recipeCommand);
+
+        //Act
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.get("/recipe/1/image"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse();
+
+        //Assert
+        byte[] responseBytes = response.getContentAsByteArray();
+        assertEquals(bytes.length, responseBytes.length);
     }
 }
